@@ -1,0 +1,12 @@
+--- drivers/usb/gadget/android.c
++++ drivers/usb/gadget/android.c
+@@ -74,6 +74,9 @@
+ #include "f_ccid.c"
+ #include "f_mtp.c"
+ #include "f_accessory.c"
++#include "f_hid.h"
++#include "f_hid_android_keyboard.c"
++#include "f_hid_android_mouse.c"
+ #define USB_ETH_RNDIS y
+ #include "f_rndis.c"
+ #include "rndis.c"

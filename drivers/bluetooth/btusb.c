@@ -37,13 +37,13 @@
 
 #define VERSION "0.6"
 
-static int ignore_dga;
-static int ignore_csr;
-static int ignore_sniffer;
-static int disable_scofix;
-static int force_scofix;
+static bool ignore_dga;
+static bool ignore_csr;
+static bool ignore_sniffer;
+static bool disable_scofix;
+static bool force_scofix;
 
-static int reset = 1;
+static bool reset = true;
 
 static struct usb_driver btusb_driver;
 
@@ -911,7 +911,6 @@ static int btusb_probe(struct usb_interface *intf,
 			id = match;
 	}
 
-	if (id->driver_info == BTUSB_IGNORE)
 		return -ENODEV;
 
 	if (ignore_dga && id->driver_info & BTUSB_DIGIANSWER)

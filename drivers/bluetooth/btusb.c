@@ -911,6 +911,7 @@ static int btusb_probe(struct usb_interface *intf,
 			id = match;
 	}
 
+    if (id->driver_info == BTUSB_IGNORE)
 		return -ENODEV;
 
 	if (ignore_dga && id->driver_info & BTUSB_DIGIANSWER)

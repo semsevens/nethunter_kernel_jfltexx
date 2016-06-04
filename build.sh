@@ -5,7 +5,7 @@ RDIR=$(pwd)
 THREADS=5
 
 export ARCH=arm
-export CROSS_COMPILE=`pwd`/toolchain/bin/arm-eabi-  
+export CROSS_COMPILE=`pwd`/toolchain/bin/arm-cortex_a15-linux-gnueabihf-
 
 make clean
 make kali_defconfig

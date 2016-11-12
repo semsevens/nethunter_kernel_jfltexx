@@ -92,13 +92,6 @@ struct mdnie_lite_tun_type mdnie_tun_state = {
 	.blind = ACCESSIBILITY_OFF,
 };
 
-const char background_name[MAX_BACKGROUND_MODE][16] = {
-	"STANDARD",
-	"DYNAMIC",
-	"MOVIE",
-	"NATURAL",
-};
-
 const char scenario_name[MAX_mDNIe_MODE][16] = {
 	"UI_MODE",
 	"VIDEO_MODE",
@@ -266,28 +259,34 @@ void mDNIe_Set_Mode(enum Lcd_mDNIe_UI mode)
 	switch (mode) {
 	case mDNIe_UI_MODE:
 		DPRINT(" = UI MODE =\n");
-		if (mdnie_tun_state.background == STANDARD_MODE) {
-			DPRINT(" = STANDARD MODE =\n");
-			INPUT_PAYLOAD1(STANDARD_UI_1);
-			INPUT_PAYLOAD2(STANDARD_UI_2);
+		if (mdnie_tun_state.outdoor == OUTDOOR_ON_MODE) {
+			DPRINT(" = OUTDOOR ON MODE =\n");
+			INPUT_PAYLOAD1(OUTDOOR_UI_1);
+			INPUT_PAYLOAD2(OUTDOOR_UI_2);
+		} else if (mdnie_tun_state.outdoor == OUTDOOR_OFF_MODE) {
+			if (mdnie_tun_state.background == STANDARD_MODE) {
+				DPRINT(" = STANDARD MODE =\n");
+				INPUT_PAYLOAD1(STANDARD_UI_1);
+				INPUT_PAYLOAD2(STANDARD_UI_2);
 #if !defined(CONFIG_SUPPORT_DISPLAY_OCTA_TFT)
-		} else if (mdnie_tun_state.background == NATURAL_MODE) {
-			DPRINT(" = NATURAL MODE =\n");
-			INPUT_PAYLOAD1(NATURAL_UI_1);
-			INPUT_PAYLOAD2(NATURAL_UI_2);
+			} else if (mdnie_tun_state.background == NATURAL_MODE) {
+				DPRINT(" = NATURAL MODE =\n");
+				INPUT_PAYLOAD1(NATURAL_UI_1);
+				INPUT_PAYLOAD2(NATURAL_UI_2);
 #endif
-		} else if (mdnie_tun_state.background == DYNAMIC_MODE) {
-			DPRINT(" = DYNAMIC MODE =\n");
-			INPUT_PAYLOAD1(DYNAMIC_UI_1);
-			INPUT_PAYLOAD2(DYNAMIC_UI_2);
-		} else if (mdnie_tun_state.background == MOVIE_MODE) {
-			DPRINT(" = MOVIE MODE =\n");
-			INPUT_PAYLOAD1(MOVIE_UI_1);
-			INPUT_PAYLOAD2(MOVIE_UI_2);
-		} else if (mdnie_tun_state.background == AUTO_MODE) {
-			DPRINT(" = AUTO MODE =\n");
-			INPUT_PAYLOAD1(AUTO_UI_1);
-			INPUT_PAYLOAD2(AUTO_UI_2);
+			} else if (mdnie_tun_state.background == DYNAMIC_MODE) {
+				DPRINT(" = DYNAMIC MODE =\n");
+				INPUT_PAYLOAD1(DYNAMIC_UI_1);
+				INPUT_PAYLOAD2(DYNAMIC_UI_2);
+			} else if (mdnie_tun_state.background == MOVIE_MODE) {
+				DPRINT(" = MOVIE MODE =\n");
+				INPUT_PAYLOAD1(MOVIE_UI_1);
+				INPUT_PAYLOAD2(MOVIE_UI_2);
+			} else if (mdnie_tun_state.background == AUTO_MODE) {
+				DPRINT(" = AUTO MODE =\n");
+				INPUT_PAYLOAD1(AUTO_UI_1);
+				INPUT_PAYLOAD2(AUTO_UI_2);
+			}
 		}
 		break;
 
@@ -610,16 +609,16 @@ void is_play_speed_1_5(int enable)
  * #
  * #	0. Dynamic
  * #	1. Standard
- * #	2. Video
- * #	3. Natural
+ * #	2. Natural
+ * #	3. Movie
+ * #	4. Auto
  * #
  * ##########################################################*/
 
 static ssize_t mode_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
-	return snprintf(buf, 256, "Current Background Mode : %s\n",
-		background_name[mdnie_tun_state.background]);
+	return snprintf(buf, 256, "%d\n", mdnie_tun_state.background);
 }
 
 static ssize_t mode_store(struct device *dev,
@@ -652,6 +651,14 @@ static ssize_t mode_store(struct device *dev,
 }
 
 static DEVICE_ATTR(mode, 0664, mode_show, mode_store);
+
+static ssize_t mode_max_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%u\n", MAX_BACKGROUND_MODE);
+}
+
+static DEVICE_ATTR(mode_max, S_IRUGO, mode_max_show, NULL);
 
 static ssize_t scenario_show(struct device *dev,
 					 struct device_attribute *attr,
@@ -836,8 +843,7 @@ static ssize_t outdoor_show(struct device *dev,
 					      char *buf)
 {
 	DPRINT("called %s\n", __func__);
-	return snprintf(buf, 256, "Current outdoor Value : %s\n",
-		(mdnie_tun_state.outdoor == 0) ? "Disabled" : "Enabled");
+	return snprintf(buf, 256, "%d\n", mdnie_tun_state.outdoor);
 }
 
 static ssize_t outdoor_store(struct device *dev,
@@ -1088,6 +1094,11 @@ void init_mdnie_class(void)
 			dev_attr_mode.attr.name);
 
 	if (device_create_file
+		(tune_mdnie_dev, &dev_attr_mode_max) < 0)
+		pr_err("Failed to create device file(%s)!\n",
+			dev_attr_mode_max.attr.name);
+
+	if (device_create_file
 		(tune_mdnie_dev, &dev_attr_outdoor) < 0)
 		pr_err("Failed to create device file(%s)!\n",
 	       dev_attr_outdoor.attr.name);
@@ -1211,4 +1222,3 @@ void coordinate_tunning(int x, int y)
 	memcpy(&CAMERA_2[scr_wr_addr], &coordinate_data[tune_number][0], coordinate_data_size);
 
 }
-

@@ -21,10 +21,6 @@ config ASHMEM
 	  POSIX SHM but with different behavior and sporting a simpler
 	  file-based API.
 
-config ANDROID_LOGGER
-	tristate "Android log driver"
-	default n
-
 config ANDROID_PERSISTENT_RAM
 	bool
 	depends on HAVE_MEMBLOCK
@@ -88,15 +84,6 @@ config SEC_OOM_KILLER
 	  as android does when LMK is invoked.
 
 source "drivers/staging/android/switch/Kconfig"
-
-config ANDROID_INTF_ALARM_DEV
-	bool "Android alarm driver"
-	depends on RTC_CLASS
-	default n
-	help
-	  Provides non-wakeup and rtc backed wakeup alarms based on rtc or
-	  elapsed realtime, and a non-wakeup alarm on the monotonic clock.
-	  Also exports the alarm interface to user-space.
 
 config RUNTIME_COMPCACHE
 	bool "Android rtcc v3"

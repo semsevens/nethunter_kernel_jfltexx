@@ -43,7 +43,7 @@ static bool ignore_sniffer;
 static bool disable_scofix;
 static bool force_scofix;
 
-static bool reset = true;
+static bool reset = 1;
 
 static struct usb_driver btusb_driver;
 
@@ -911,7 +911,7 @@ static int btusb_probe(struct usb_interface *intf,
 			id = match;
 	}
 
-    if (id->driver_info == BTUSB_IGNORE)
+	if (id->driver_info == BTUSB_IGNORE)
 		return -ENODEV;
 
 	if (ignore_dga && id->driver_info & BTUSB_DIGIANSWER)

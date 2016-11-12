@@ -843,6 +843,11 @@ static void process_init_reply(struct fuse_conn *fc, struct fuse_req *req)
 				fc->big_writes = 1;
 			if (arg->flags & FUSE_DONT_MASK)
 				fc->dont_mask = 1;
+			if (arg->flags & FUSE_SHORTCIRCUIT) {
+				fc->shortcircuit_io = 1;
+				pr_info("FUSE: SHORTCIRCUIT enabled [%s : %d]!\n",
+					current->comm, current->pid);
+			}
 		} else {
 			ra_pages = fc->max_read / PAGE_CACHE_SIZE;
 			fc->no_lock = 1;
@@ -981,6 +986,7 @@ static int fuse_fill_super(struct super_block *sb, void *data, int silent)
 		goto err_fput;
 
 	fuse_conn_init(fc);
+	fc->release = fuse_free_conn;
 
 	fc->dev = sb->s_dev;
 	fc->sb = sb;
@@ -995,7 +1001,6 @@ static int fuse_fill_super(struct super_block *sb, void *data, int silent)
 		fc->dont_mask = 1;
 	sb->s_flags |= MS_POSIXACL;
 
-	fc->release = fuse_free_conn;
 	fc->flags = d.flags;
 	fc->user_id = d.user_id;
 	fc->group_id = d.group_id;

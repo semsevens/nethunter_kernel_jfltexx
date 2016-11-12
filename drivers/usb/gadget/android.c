@@ -73,12 +73,12 @@
 #include "f_mtp.c"
 #endif
 #include "f_accessory.c"
-#ifdef CONFIG_USB_ANDROID_SAMSUNG_SIDESYNC
-#include "f_conn_gadget.c"
-#endif
 #include "f_hid.h"
 #include "f_hid_android_keyboard.c"
 #include "f_hid_android_mouse.c"
+#ifdef CONFIG_USB_ANDROID_SAMSUNG_SIDESYNC
+#include "f_conn_gadget.c"
+#endif
 #ifdef CONFIG_USB_ANDROID_CDC_ECM
 #include "f_ecm.c"
 #else

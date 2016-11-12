@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2013, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2011-2014, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -193,7 +193,8 @@ enum msm_audio_voc_rate {
 		VOC_8_RATE, /* 1/8 rate    */
 		VOC_4_RATE, /* 1/4 rate    */
 		VOC_2_RATE, /* 1/2 rate    */
-		VOC_1_RATE  /* Full rate   */
+		VOC_1_RATE, /* Full rate   */
+		VOC_8_RATE_NC  /* Noncritical 1/8 rate   */
 };
 
 struct vss_istream_cmd_set_tty_mode_t {
@@ -696,6 +697,8 @@ struct cvs_start_record_cmd {
 /*CDMA EVRC-B vocoder modem format */
 #define VSS_MEDIA_ID_4GV_WB_MODEM	0x00010FC4
 /*CDMA EVRC-WB vocoder modem format */
+#define VSS_MEDIA_ID_4GV_NW_MODEM	0x00010FC5
+/*CDMA EVRC-NW vocoder modem format */
 
 #define VSS_IVOCPROC_CMD_SET_MUTE			0x000110EF
 
@@ -906,6 +909,8 @@ struct mvs_driver_info {
 	ul_cb_fn ul_cb;
 	dl_cb_fn dl_cb;
 	void *private_data;
+	uint32_t evrc_min_rate;
+	uint32_t evrc_max_rate;
 };
 
 struct incall_rec_info {
@@ -1012,7 +1017,9 @@ void voc_register_mvs_cb(ul_cb_fn ul_cb,
 void voc_config_vocoder(uint32_t media_type,
 			uint32_t rate,
 			uint32_t network_type,
-			uint32_t dtx_mode);
+			uint32_t dtx_mode,
+			uint32_t evrc_min_rate,
+			uint32_t evrc_max_rate);
 
 enum {
 	DEV_RX = 0,
@@ -1062,5 +1069,6 @@ uint16_t voc_get_session_id(char *name);
 int voc_start_playback(uint32_t set);
 int voc_start_record(uint32_t port_id, uint32_t set);
 int voc_set_ext_ec_ref(uint16_t port_id, bool state);
+int voc_update_amr_vocoder_rate(uint32_t session_id);
 
 #endif

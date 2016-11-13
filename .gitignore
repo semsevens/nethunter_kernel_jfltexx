@@ -84,3 +84,6 @@ GTAGS
 *.orig
 *~
 \#*#
+
+# build folder
+build
